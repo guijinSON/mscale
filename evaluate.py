@@ -29,8 +29,8 @@ def load_kmmlu_data():
     dfs = [pd.DataFrame(load_dataset("HAERAE-HUB/KMMLU", field)['test']) for field in stem_fields]
     return pd.concat(dfs)
 
-def prepare_queries(df):
-    return [{'query': kmmlu_mcqa.format(row.question, row.A, row.B, row.C, row.D),
+def prepare_queries(df,template):
+    return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
              'answer': ['A', 'B', 'C', 'D'][row.answer-1],
              'category': row.Category} for _, row in df.iterrows()]
 
@@ -45,7 +45,7 @@ def main():
 
     if args.dataset == "kmmlu":
         df = load_kmmlu_data()
-        queries = prepare_queries(df)
+        queries = prepare_queries(df,kmmlu_mcqa)
     elif args.dataset == "indommlu":
         print("IndoMMlu dataset not yet implemented")
         return
