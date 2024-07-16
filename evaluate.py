@@ -1,38 +1,30 @@
 import argparse
 from vllm import LLM, SamplingParams
 from logits import ban_illegal_tokens, get_allowed_token_ids
-from template import kmmlu_mcqa
-from datasets import load_dataset
+from src.template import kmmlu_mcqa,BLEND_en_mcqa
+from src.data_loader import load_kmmlu_data, load_blend_data
 import pandas as pd
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Evaluate language models on KMMLU dataset")
     parser.add_argument("--model", default="facebook/opt-125m", help="Name of the model to evaluate")
-    parser.add_argument("--dataset", default="kmmlu", choices=["kmmlu", "indommlu"], help="Dataset to use for evaluation")
+    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend'], help="Dataset to use for evaluation")
     parser.add_argument("--temperature", type=float, default=0.8, help="Sampling temperature")
     parser.add_argument("--top_p", type=float, default=0.95, help="Top-p sampling parameter")
     parser.add_argument("--allowed_tokens", nargs='+', default=['A', 'B', 'C', 'D'], help="List of allowed tokens")
+    parser.add_argument("--lan", default='ko', help="language for benchmark")    
     return parser.parse_args()
 
-def load_kmmlu_data():
-    stem_fields = [
-        'Agricultural-Sciences', 'Aviation-Engineering-and-Maintenance',
-        'Biology', 'Chemical-Engineering', 'Chemistry',
-        'Civil-Engineering', 'Computer-Science', 'Electrical-Engineering',
-        'Electronics-Engineering', 'Energy-Management', 'Environmental-Science',
-        'Food-Processing', 'Gas-Technology-and-Engineering', 'Geomatics',
-        'Industrial-Engineer', 'Information-Technology', 'Machine-Design-and-Manufacturing',
-        'Materials-Engineering', 'Mechanical-Engineering', 'Nondestructive-Testing',
-        'Railway-and-Automotive-Engineering', 'Refrigerating-Machinery', 'Telecommunications-and-Wireless-Technology',
-        'Math'
-    ]
-    dfs = [pd.DataFrame(load_dataset("HAERAE-HUB/KMMLU", field)['test']) for field in stem_fields]
-    return pd.concat(dfs)
+
 
 def prepare_queries(df,template):
-    return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
-             'answer': ['A', 'B', 'C', 'D'][row.answer-1],
-             'category': row.Category} for _, row in df.iterrows()]
+    try:
+        return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
+                'answer': ['A', 'B', 'C', 'D'][row.answer-1],
+                'category': row.Category} for _, row in df.iterrows()]
+    except:
+        return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
+                'answer': ['A', 'B', 'C', 'D'][row.answer-1]} for _, row in df.iterrows()]
 
 def evaluate_model(model, queries, sampling_params):
     outputs = model.generate([item['query'] for item in queries], sampling_params)
@@ -48,8 +40,9 @@ def main():
         queries = prepare_queries(df,kmmlu_mcqa)
     elif args.dataset == "indommlu":
         print("IndoMMlu dataset not yet implemented")
-        return
-
+    elif args.dataset == "blend":
+        df = load_blend_data(args.lan)
+        queries = prepare_queries(df,BLEND_en_mcqa)
     model = LLM(model=args.model)
     allowed_token_ids = get_allowed_token_ids(model, args.allowed_tokens)
     sampling_params = SamplingParams(
