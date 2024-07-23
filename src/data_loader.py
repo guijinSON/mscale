@@ -4,6 +4,8 @@ from datasets import load_dataset
 def load_indommlu_data():
     df = pd.DataFrame(load_dataset('indolem/IndoMMLU')['test'])
     df = df[df.group=='STEM']
+    df['option_len'] = df.options.apply(lambda x:len(eval(x)))
+    df = df[df.option_len==5]
     return df
     
 def load_kmmlu_data():
