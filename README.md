@@ -13,5 +13,5 @@ Codebase for multilingual scaling laws.
 | Blend   | Indonesian |     |
 | Belebele| English    | python evaluate.py --model "facebook/opt-1.3b" --dataset "belebele" --lang "en"        |
 | Belebele| Korean     | python evaluate.py --model "facebook/opt-1.3b" --dataset "belebele" --lang "ko"        |
-| Belebele| Indonesian | python evaluate.py --model "facebook/opt-1.3b" --dataset "belebele" --lang "indo"        |
+| Belebele| Indonesian | python evaluate.py --model "facebook/opt-1.3b" --dataset "belebele" --lang "id"        |
 
