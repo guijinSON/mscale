@@ -1,7 +1,7 @@
 import argparse
 from vllm import LLM, SamplingParams
 from logits import ban_illegal_tokens, get_allowed_token_ids
-from src.template import kmmlu_mcqa,BLEND_en_mcqa, indommlu_mcqa, mmlu_mcqa, belebele_en, belebele_ko, belebele_indo
+from src.template import kmmlu_mcqa,BLEND_en_mcqa, indommlu_mcqa, mmlu_mcqa, belebele_mcqa_ko, belebele_mcqa_en, belebele_mcqa_indo
 from src.data_loader import load_kmmlu_data, load_blend_data, load_indommlu_data, load_mmlu_data, load_belebele_data
 import pandas as pd
 
