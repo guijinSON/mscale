@@ -2,19 +2,16 @@
 Codebase for multilingual scaling laws.
 
 ## Usage
-Using default settings
-```python
-python evaluate.py --model "facebook/opt-1.3b" --dataset "kmmlu"
-```
 
-Specify decoding configurations
+| Dataset | Language   | Command Line                           |
+|---------|------------|----------------------------------------|
+| MMLU    | English    | python evaluate.py --model "facebook/opt-1.3b" --dataset "mmlu"        |
+| MMLU    | Korean     | python evaluate.py --model "facebook/opt-1.3b" --dataset "kmmlu"         |
+| MMLU    | Indonesian | python evaluate.py --model "facebook/opt-1.3b" --dataset "indommlu" --allowed_tokens A B C D E     |
+| Blend   | English    |        |
+| Blend   | Korean     |         |
+| Blend   | Indonesian |     |
+| Belebele| English    | python evaluate.py --model "facebook/opt-1.3b" --dataset "belebele" --lang "en"        |
+| Belebele| Korean     | python evaluate.py --model "facebook/opt-1.3b" --dataset "belebele" --lang "ko"        |
+| Belebele| Indonesian | python evaluate.py --model "facebook/opt-1.3b" --dataset "belebele" --lang "indo"        |
 
-```python
-python evaluate.py --model "facebook/opt-1.3b" --dataset "kmmlu" --temperature 0.7 --top_p 0.9
-```
-
-Specify allowed tokens
-
-```python
-python evaluate.py --model "facebook/opt-1.3b" --dataset "kmmlu" --temperature 0.7 --top_p 0.9 --allowed_tokens A B C D E
-```
