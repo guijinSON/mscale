@@ -1,6 +1,11 @@
 import pandas as pd 
 from datasets import load_dataset
 
+def load_mmlu_data():
+    stem_fields = ['abstract_algebra', 'anatomy', 'astronomy', 'college_biology', 'college_chemistry', 'college_computer_science', 'college_mathematics', 'college_physics', 'computer_security', 'conceptual_physics', 'electrical_engineering', 'elementary_mathematics', 'high_school_biology', 'high_school_chemistry', 'high_school_computer_science', 'high_school_mathematics', 'high_school_physics', 'high_school_statistics', 'machine_learning']
+    dfs = [pd.DataFrame(load_dataset("cais/mmlu", field)['test']) for field in stem_fields]
+    return pd.concat(dfs)
+    
 def load_indommlu_data():
     df = pd.DataFrame(load_dataset('indolem/IndoMMLU')['test'])
     df = df[df.group=='STEM']
