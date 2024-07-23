@@ -1,8 +1,8 @@
 import argparse
 from vllm import LLM, SamplingParams
 from logits import ban_illegal_tokens, get_allowed_token_ids
-from src.template import kmmlu_mcqa,BLEND_en_mcqa, indommlu_mcqa
-from src.data_loader import load_kmmlu_data, load_blend_data, load_indommlu_data
+from src.template import kmmlu_mcqa,BLEND_en_mcqa, indommlu_mcqa, mmlu_mcqa
+from src.data_loader import load_kmmlu_data, load_blend_data, load_indommlu_data, load_mmlu_data
 import pandas as pd
 
 def parse_arguments():
@@ -31,6 +31,11 @@ def prepare_queries(df,template,dataset_name):
         return [{'query': template.format(row.question, *eval(row.options)),
                   'answer' : row.answer,
                   'category':row.subject} for _,row in df.iterrows()]
+    
+    elif dataset_name in ['mmlu']:
+        return [{'query': template.format(row.question, *row.choices),
+                 'answer' : ['A','B','C','D'][row.answer],
+                 'category':row.subject} for _,row in df.iterrows()]
                     
 
 def evaluate_model(model, queries, sampling_params):
@@ -53,6 +58,10 @@ def main():
     elif args.dataset == "blend":
         df = load_blend_data(args.lan)
         queries = prepare_queries(df,BLEND_en_mcqa,args.dataset)
+
+    elif args.dataset == "mmlu":
+        df = load_mmlu_data(args.lan)
+        queries = prepare_queries(df,mmlu_mcqa,args.dataset)
         
     model = LLM(model=args.model)
     allowed_token_ids = get_allowed_token_ids(model, args.allowed_tokens)
