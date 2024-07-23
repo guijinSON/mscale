@@ -18,16 +18,16 @@ def parse_arguments():
 
 
 def prepare_queries(df,template,dataset_name):
-    if dataset_name is in ['kmmlu']:
+    if dataset_name in ['kmmlu']:
         return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
                 'answer': ['A', 'B', 'C', 'D'][row.answer-1],
                 'category': row.Category} for _, row in df.iterrows()]
     
-    elif dataset_name is in ['blend']:
+    elif dataset_name in ['blend']:
         return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
                 'answer': ['A', 'B', 'C', 'D'][row.answer-1]} for _, row in df.iterrows()]
     
-    elif dataset_name is in ['indommlu']:
+    elif dataset_name in ['indommlu']:
         return [{'query': template.format(row.question, *eval(row.options)),
                   'answer' : row.answer,
                   'category':row.subject} for _,row in df.iterrows()]
