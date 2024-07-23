@@ -7,6 +7,15 @@ kmmlu_mcqa = """다음 문제를 읽고 정답으로 가장 알맞은 것을 고
     D. {}
 ### 정답:"""
 
+indommlu_mcqa = """Bacalah soal berikut dan pilihlah jawaban yang paling tepat.
+### Pertanyaan: {}
+### Pilihan:
+    A. {}
+    B. {}
+    C. {}
+    D. {}
+### Jawaban:"""
+
 BLEND_ko_mcqa = """다음 문제를 읽고 정답으로 가장 알맞은 것을 고르시요.
 ### 질문: {}
 ### 선택지:
