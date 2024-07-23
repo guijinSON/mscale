@@ -1,3 +1,12 @@
+mmlu_mcqa = """Read the following question and choose the most appropriate answer.
+### Question: {}
+### Options:
+    A. {}
+    B. {}
+    C. {}
+    D. {}
+### Answer:"""
+
 kmmlu_mcqa = """다음 문제를 읽고 정답으로 가장 알맞은 것을 고르시요.
 ### 질문: {}
 ### 선택지:
