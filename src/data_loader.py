@@ -15,10 +15,10 @@ def load_kmmlu_data():
     dfs = [pd.DataFrame(load_dataset("HAERAE-HUB/KMMLU", field)['test']) for field in stem_fields]
     return pd.concat(dfs)
 
-def load_blend_data(lan='ko'):
-    lan_country_dict = {'ko':'Sounth_Korea'}
+def load_blend_data(language='ko'):
+    lan_country_dict = {'ko':'Sounth_Korea','id':'Indonesia','en':"US"}
     mcq = load_dataset("nayeon212/BLEnD",'multiple-choice-questions')['test']
-    mcq_filtered = mcq.filter(lambda x: x['country'] == 'South_Korea')
+    mcq_filtered = mcq.filter(lambda x: x['country'] == lan_country_dict[language])
      
     question = [i.replace('Without any explanation, choose only one from the given alphabet choices(e.g., A, B, C). Provide as JSON format: {"answer_choice":""}\n\nA. apple\nB. banana\nC. durian\nD. orange\n\nAnswer:','') for i in mcq_filtered['prompt']]
     prompt = mcq_filtered['prompt']
