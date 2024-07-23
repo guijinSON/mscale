@@ -37,7 +37,7 @@ def prepare_queries(df,template,dataset_name):
                  'answer' : ['A','B','C','D'][row.answer],
                  'category':row.subject} for _,row in df.iterrows()]
     
-    elif dataset_name in ['belebele_ko','belebele_en','belebele_indo']:
+    elif dataset_name in ['belebele']:
         return [{'query': template.format(row.question, row.flores_passage,row.mc_answer1,row.mc_answer2,row.mc_answer3,row.mc_answer4),
                  'answer' : ['A','B','C','D'][row.correct_answer_num-1]} for _,row in df.iterrows()]
                     
