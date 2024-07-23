@@ -8,7 +8,7 @@ import pandas as pd
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Evaluate language models on KMMLU dataset")
     parser.add_argument("--model", default="facebook/opt-125m", help="Name of the model to evaluate")
-    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend','mmlu','mgsm_ko','mgsm_en','mgsm_indo','belebele_ko','belebele_en','belebele_indo'], help="Dataset to use for evaluation")
+    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend','mmlu','mgsm_ko','mgsm_en','mgsm_indo','belebele'], help="Dataset to use for evaluation")
     parser.add_argument("--temperature", type=float, default=0.8, help="Sampling temperature")
     parser.add_argument("--top_p", type=float, default=0.95, help="Top-p sampling parameter")
     parser.add_argument("--allowed_tokens", nargs='+', default=['A', 'B', 'C', 'D'], help="List of allowed tokens")
@@ -67,18 +67,15 @@ def main():
         df = load_mmlu_data()
         queries = prepare_queries(df,mmlu_mcqa,args.dataset)
 
-    elif args.dataset == "belebele_ko":
-        df = load_belebele_data(args.dataset)
-        queries = prepare_queries(df,belebele_mcqa_ko,args.dataset)
-        
-    elif args.dataset == "belebele_en":
-        df = load_belebele_data(args.dataset)
-        queries = prepare_queries(df,belebele_mcqa_en,args.dataset)
-        
-    elif args.dataset == "belebele_indo":
-        df = load_belebele_data(args.dataset)
-        queries = prepare_queries(df,belebele_mcqa_indo,args.dataset)
-        
+    elif args.dataset == "belebele":
+        df = load_belebele_data(args.dataset,args.lan)
+        if args.lan == 'ko':
+            queries = prepare_queries(df,belebele_mcqa_ko,args.dataset)
+        elif args.lan == 'indo':
+            queries = prepare_queries(df,belebele_mcqa_indo,args.dataset)
+        elif args.lan == 'en':
+            queries = prepare_queries(df,belebele_mcqa_en,args.dataset)
+            
     model = LLM(model=args.model)
     allowed_token_ids = get_allowed_token_ids(model, args.allowed_tokens)
     sampling_params = SamplingParams(
