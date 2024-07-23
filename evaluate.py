@@ -8,7 +8,7 @@ import pandas as pd
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Evaluate language models on KMMLU dataset")
     parser.add_argument("--model", default="facebook/opt-125m", help="Name of the model to evaluate")
-    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend','mmlu','mgsm_ko','mgsm_en','mgsm_indo'], help="Dataset to use for evaluation")
+    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend','mmlu','mgsm_ko','mgsm_en','mgsm_indo','belebele_ko','belebele_en','belebele_indo'], help="Dataset to use for evaluation")
     parser.add_argument("--temperature", type=float, default=0.8, help="Sampling temperature")
     parser.add_argument("--top_p", type=float, default=0.95, help="Top-p sampling parameter")
     parser.add_argument("--allowed_tokens", nargs='+', default=['A', 'B', 'C', 'D'], help="List of allowed tokens")
@@ -36,6 +36,10 @@ def prepare_queries(df,template,dataset_name):
         return [{'query': template.format(row.question, *row.choices),
                  'answer' : ['A','B','C','D'][row.answer],
                  'category':row.subject} for _,row in df.iterrows()]
+    
+    elif dataset_name in ['belebele_ko','belebele_en','belebele_indo']:
+        return [{'query': template.format(row.question, row.flores_passage,row.mc_answer1,row.mc_answer2,row.mc_answer3,row.mc_answer4),
+                 'answer' : ['A','B','C','D'][row.correct_answer_num-1]} for _,row in df.iterrows()]
                     
 
 def evaluate_model(model, queries, sampling_params):
@@ -62,6 +66,18 @@ def main():
     elif args.dataset == "mmlu":
         df = load_mmlu_data()
         queries = prepare_queries(df,mmlu_mcqa,args.dataset)
+
+    elif args.dataset == "belebele_ko":
+        df = load_belebele_data(args.dataset)
+        queries = prepare_queries(df,belebele_mcqa_ko,args.dataset)
+        
+    elif args.dataset == "belebele_en":
+        df = load_belebele_data(args.dataset)
+        queries = prepare_queries(df,belebele_mcqa_en,args.dataset)
+        
+    elif args.dataset == "belebele_indo":
+        df = load_belebele_data(args.dataset)
+        queries = prepare_queries(df,belebele_mcqa_indo,args.dataset)
         
     model = LLM(model=args.model)
     allowed_token_ids = get_allowed_token_ids(model, args.allowed_tokens)
