@@ -71,7 +71,7 @@ def main():
         df = load_belebele_data(args.lang)
         if args.lang == 'ko':
             queries = prepare_queries(df,belebele_mcqa_ko,args.dataset)
-        elif args.lang == 'indo':
+        elif args.lang == 'id':
             queries = prepare_queries(df,belebele_mcqa_indo,args.dataset)
         elif args.lang == 'en':
             queries = prepare_queries(df,belebele_mcqa_en,args.dataset)

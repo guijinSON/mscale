@@ -4,7 +4,7 @@ from datasets import load_dataset
 def load_belebele_data(language):
     if language == 'ko':
         return pd.DataFrame(load_dataset("facebook/belebele",split='kor_Hang'))
-    elif language == 'indo':
+    elif language == 'id':
         return pd.DataFrame(load_dataset("facebook/belebele",split='ind_Latn'))
     elif language == 'en':
         return pd.DataFrame(load_dataset("facebook/belebele",split='eng_Latn'))
