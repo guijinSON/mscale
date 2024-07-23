@@ -68,7 +68,7 @@ def main():
         queries = prepare_queries(df,mmlu_mcqa,args.dataset)
 
     elif args.dataset == "belebele":
-        df = load_belebele_data(args.dataset,args.lan)
+        df = load_belebele_data(args.lan)
         if args.lan == 'ko':
             queries = prepare_queries(df,belebele_mcqa_ko,args.dataset)
         elif args.lan == 'indo':
