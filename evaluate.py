@@ -8,7 +8,7 @@ import pandas as pd
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Evaluate language models on KMMLU dataset")
     parser.add_argument("--model", default="facebook/opt-125m", help="Name of the model to evaluate")
-    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend'], help="Dataset to use for evaluation")
+    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend','mmlu','mgsm_ko','mgsm_en','mgsm_indo'], help="Dataset to use for evaluation")
     parser.add_argument("--temperature", type=float, default=0.8, help="Sampling temperature")
     parser.add_argument("--top_p", type=float, default=0.95, help="Top-p sampling parameter")
     parser.add_argument("--allowed_tokens", nargs='+', default=['A', 'B', 'C', 'D'], help="List of allowed tokens")
@@ -60,7 +60,7 @@ def main():
         queries = prepare_queries(df,BLEND_en_mcqa,args.dataset)
 
     elif args.dataset == "mmlu":
-        df = load_mmlu_data(args.lan)
+        df = load_mmlu_data()
         queries = prepare_queries(df,mmlu_mcqa,args.dataset)
         
     model = LLM(model=args.model)
