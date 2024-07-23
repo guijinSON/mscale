@@ -12,7 +12,7 @@ def parse_arguments():
     parser.add_argument("--temperature", type=float, default=0.8, help="Sampling temperature")
     parser.add_argument("--top_p", type=float, default=0.95, help="Top-p sampling parameter")
     parser.add_argument("--allowed_tokens", nargs='+', default=['A', 'B', 'C', 'D'], help="List of allowed tokens")
-    parser.add_argument("--lan", default='ko', help="language for benchmark")    
+    parser.add_argument("--lang", default='none', help="language for benchmark")    
     return parser.parse_args()
 
 
@@ -39,7 +39,7 @@ def prepare_queries(df,template,dataset_name):
     
     elif dataset_name in ['belebele']:
         return [{'query': template.format(row.question, row.flores_passage,row.mc_answer1,row.mc_answer2,row.mc_answer3,row.mc_answer4),
-                 'answer' : ['A','B','C','D'][row.correct_answer_num-1]} for _,row in df.iterrows()]
+                 'answer' : ['A','B','C','D'][int(row.correct_answer_num)-1]} for _,row in df.iterrows()]
                     
 
 def evaluate_model(model, queries, sampling_params):
@@ -60,7 +60,7 @@ def main():
         queries = prepare_queries(df,indommlu_mcqa,args.dataset)
         
     elif args.dataset == "blend":
-        df = load_blend_data(args.lan)
+        df = load_blend_data(args.lang)
         queries = prepare_queries(df,BLEND_en_mcqa,args.dataset)
 
     elif args.dataset == "mmlu":
@@ -68,12 +68,12 @@ def main():
         queries = prepare_queries(df,mmlu_mcqa,args.dataset)
 
     elif args.dataset == "belebele":
-        df = load_belebele_data(args.lan)
-        if args.lan == 'ko':
+        df = load_belebele_data(args.lang)
+        if args.lang == 'ko':
             queries = prepare_queries(df,belebele_mcqa_ko,args.dataset)
-        elif args.lan == 'indo':
+        elif args.lang == 'indo':
             queries = prepare_queries(df,belebele_mcqa_indo,args.dataset)
-        elif args.lan == 'en':
+        elif args.lang == 'en':
             queries = prepare_queries(df,belebele_mcqa_en,args.dataset)
             
     model = LLM(model=args.model)
@@ -86,7 +86,7 @@ def main():
     )
 
     results = evaluate_model(model, queries, sampling_params)
-    output_file = f"{args.model.replace('/', '_')}_{args.dataset}.csv"
+    output_file = f"{args.model.replace('/', '_')}_{args.dataset}_{args.lang}.csv"
     pd.DataFrame(results).to_csv(output_file)
     print(f"Results saved to {output_file}")
 
