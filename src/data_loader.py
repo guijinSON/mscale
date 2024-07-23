@@ -1,12 +1,12 @@
 import pandas as pd 
 from datasets import load_dataset
 
-def load_belebele_data(dataset_name):
-    if dataset_name == 'belebele_ko':
+def load_belebele_data(language):
+    if language == 'ko':
         return pd.DataFrame(load_dataset("facebook/belebele",split='kor_Hang'))
-    elif dataset_name == 'belebele_indo':
+    elif language == 'indo':
         return pd.DataFrame(load_dataset("facebook/belebele",split='ind_Latn'))
-    elif dataset_name == 'belebele_en':
+    elif language == 'en':
         return pd.DataFrame(load_dataset("facebook/belebele",split='eng_Latn'))
     
 def load_mmlu_data():
