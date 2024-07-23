@@ -1,5 +1,11 @@
 import pandas as pd 
 from datasets import load_dataset
+
+def load_indommlu_data():
+    df = pd.DataFrame(load_dataset('indolem/IndoMMLU')['test'])
+    df = df[df.group=='STEM']
+    return df
+    
 def load_kmmlu_data():
     stem_fields = [
         'Agricultural-Sciences', 'Aviation-Engineering-and-Maintenance',
