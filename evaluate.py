@@ -8,11 +8,11 @@ import pandas as pd
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Evaluate language models on KMMLU dataset")
     parser.add_argument("--model", default="facebook/opt-125m", help="Name of the model to evaluate")
-    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend','mmlu','mgsm_ko','mgsm_en','mgsm_indo','belebele'], help="Dataset to use for evaluation")
+    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend','mmlu','belebele'], help="Dataset to use for evaluation")
     parser.add_argument("--temperature", type=float, default=0.8, help="Sampling temperature")
     parser.add_argument("--top_p", type=float, default=0.95, help="Top-p sampling parameter")
     parser.add_argument("--allowed_tokens", nargs='+', default=['A', 'B', 'C', 'D'], help="List of allowed tokens")
-    parser.add_argument("--lang", default='none', help="language for benchmark")    
+    parser.add_argument("--lang", default='none', choices=['en','id','ko'], help="language for benchmark")    
     return parser.parse_args()
 
 
