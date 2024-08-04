@@ -8,17 +8,21 @@ import pandas as pd
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Evaluate language models on KMMLU dataset")
     parser.add_argument("--model", default="facebook/opt-125m", help="Name of the model to evaluate")
-    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu",'blend','mmlu','belebele'], help="Dataset to use for evaluation")
+    parser.add_argument("--model_version", default="main", help="version of the model to evaluate")
+    parser.add_argument("--model_cache_path", default="/", help="path for saving model cache")
+    parser.add_argument("--dataset", default="blend", choices=["kmmlu", "indommlu","kmmlu-sample", "indommlu-sample",'blend','mmlu','belebele'], help="Dataset to use for evaluation")
     parser.add_argument("--temperature", type=float, default=0.8, help="Sampling temperature")
     parser.add_argument("--top_p", type=float, default=0.95, help="Top-p sampling parameter")
     parser.add_argument("--allowed_tokens", nargs='+', default=['A', 'B', 'C', 'D'], help="List of allowed tokens")
     parser.add_argument("--lang", default='none', choices=['en','id','ko'], help="language for benchmark")    
+    parser.add_argument("--input_path", default='none', help="input path for the dataset")   
+    parser.add_argument("--output_path", default='none', help="path for saving")   
     return parser.parse_args()
 
 
 
 def prepare_queries(df,template,dataset_name):
-    if dataset_name in ['kmmlu']:
+    if dataset_name in ['kmmlu','kmmlu-sample']:
         return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
                 'answer': ['A', 'B', 'C', 'D'][row.answer-1],
                 'category': row.Category} for _, row in df.iterrows()]
@@ -27,10 +31,8 @@ def prepare_queries(df,template,dataset_name):
         return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
                 'answer': ['A', 'B', 'C', 'D'][row.answer-1]} for _, row in df.iterrows()]
     
-    elif dataset_name in ['indommlu']:
-        return [{'query': template.format(row.question, *eval(row.options)),
-                  'answer' : row.answer,
-                  'category':row.subject} for _,row in df.iterrows()]
+    elif dataset_name in ['indommlu','indommlu-sample']:
+        return [{'query': template.format(row.question, (eval(row.options) + [""] * (5 - len(eval(row.options))))[0],(eval(row.options) + [""] * (5 - len(eval(row.options))))[1],(eval(row.options) + [""] * (5 - len(eval(row.options))))[2],(eval(row.options) + [""] * (5 - len(eval(row.options))))[3],(eval(row.options) + [""] * (5 - len(eval(row.options))))[4]), 'answer' : row.answer, 'category':row.subject} for _,row in df.iterrows()]
     
     elif dataset_name in ['mmlu']:
         return [{'query': template.format(row.question, *row.choices),
@@ -59,10 +61,19 @@ def main():
         df = load_indommlu_data()
         queries = prepare_queries(df,indommlu_mcqa,args.dataset)
         
+
+    elif args.dataset == "kmmlu-sample":
+        df = pd.read_csv(args.input_path)
+        queries = prepare_queries(df,kmmlu_mcqa,args.dataset)
+        
+    elif args.dataset == "indommlu-sample":
+        df = pd.read_csv(args.input_path)
+        queries = prepare_queries(df,indommlu_mcqa,args.dataset)
+        
     elif args.dataset == "blend":
         df = load_blend_data(args.lang)
         queries = prepare_queries(df,BLEND_en_mcqa,args.dataset)
-
+        import pdb;pdb.set_trace()
     elif args.dataset == "mmlu":
         df = load_mmlu_data()
         queries = prepare_queries(df,mmlu_mcqa,args.dataset)
@@ -75,8 +86,8 @@ def main():
             queries = prepare_queries(df,belebele_mcqa_indo,args.dataset)
         elif args.lang == 'en':
             queries = prepare_queries(df,belebele_mcqa_en,args.dataset)
-            
-    model = LLM(model=args.model)
+
+    model = LLM(model=args.model,revision = args.model_version, trust_remote_code=True,download_dir = args.model_cache_path)
     allowed_token_ids = get_allowed_token_ids(model, args.allowed_tokens)
     sampling_params = SamplingParams(
         temperature=args.temperature,
@@ -86,7 +97,7 @@ def main():
     )
 
     results = evaluate_model(model, queries, sampling_params)
-    output_file = f"{args.model.replace('/', '_')}_{args.dataset}_{args.lang}.csv"
+    output_file = f"{args.output_path}/{args.model.replace('/', '_')}_{args.model_version}_{args.dataset}_{args.lang}.csv"
     pd.DataFrame(results).to_csv(output_file)
     print(f"Results saved to {output_file}")
 

@@ -37,7 +37,7 @@ def load_kmmlu_data():
     return pd.concat(dfs)
 
 def load_blend_data(language='ko'):
-    lan_country_dict = {'ko':'Sounth_Korea','id':'Indonesia','en':"US"}
+    lan_country_dict = {'ko':'South_Korea','id':'Indonesia','en':"US"}
     mcq = load_dataset("nayeon212/BLEnD",'multiple-choice-questions')['test']
     mcq_filtered = mcq.filter(lambda x: x['country'] == lan_country_dict[language])
      
