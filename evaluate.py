@@ -73,7 +73,6 @@ def main():
     elif args.dataset == "blend":
         df = load_blend_data(args.lang)
         queries = prepare_queries(df,BLEND_en_mcqa,args.dataset)
-        import pdb;pdb.set_trace()
     elif args.dataset == "mmlu":
         df = load_mmlu_data()
         queries = prepare_queries(df,mmlu_mcqa,args.dataset)
