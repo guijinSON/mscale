@@ -29,7 +29,7 @@ def prepare_queries(df,template,dataset_name):
     
     elif dataset_name in ['blend']:
         return [{'query': template.format(row.question, row.A, row.B, row.C, row.D),
-                'answer': ['A', 'B', 'C', 'D'][row.answer-1]} for _, row in df.iterrows()]
+                'answer': ['A', 'B', 'C', 'D'][row.answer]} for _, row in df.iterrows()]
     
     elif dataset_name in ['indommlu','indommlu-sample']:
         return [{'query': template.format(row.question, (eval(row.options) + [""] * (5 - len(eval(row.options))))[0],(eval(row.options) + [""] * (5 - len(eval(row.options))))[1],(eval(row.options) + [""] * (5 - len(eval(row.options))))[2],(eval(row.options) + [""] * (5 - len(eval(row.options))))[3],(eval(row.options) + [""] * (5 - len(eval(row.options))))[4]), 'answer' : row.answer, 'category':row.subject} for _,row in df.iterrows()]
