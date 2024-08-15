@@ -41,7 +41,7 @@ def load_blend_data(language='ko'):
     mcq = load_dataset("nayeon212/BLEnD",'multiple-choice-questions')['test']
     mcq_filtered = mcq.filter(lambda x: x['country'] == lan_country_dict[language])
      
-    question = [i.replace('Without any explanation, choose only one from the given alphabet choices(e.g., A, B, C). Provide as JSON format: {"answer_choice":""}\n\nA. apple\nB. banana\nC. durian\nD. orange\n\nAnswer:','') for i in mcq_filtered['prompt']]
+    question = [i[:i.find('Without any explanation')].strip() for i in mcq_filtered['prompt']]
     prompt = mcq_filtered['prompt']
     A = [eval(i)['A'] for i in mcq_filtered['choices']]
     B = [eval(i)['B'] for i in mcq_filtered['choices']]
